@@ -30,8 +30,11 @@ if [[ "$*" != *--use-gcloud-auth* ]] ; then
   SA_NAME="terraform"
   SA_MEMBER="serviceAccount:$SA_NAME@$DEVSHELL_PROJECT_ID.iam.gserviceaccount.com"
 
-  # Create AppEngine app in order to activate datastore
-  gcloud app create --region=us-central
+  # Create AppEngine app, if not already exists, in order to activate datastore
+  if ! gcloud services list | grep appengine
+  then
+    gcloud app create --region=us-central
+  fi
 
   # Create service account
   gcloud iam service-accounts create "${SA_NAME}" --display-name "${SA_NAME}"
