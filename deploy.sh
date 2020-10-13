@@ -31,8 +31,7 @@ if [[ "$*" != *--use-gcloud-auth* ]] ; then
   SA_MEMBER="serviceAccount:$SA_NAME@$DEVSHELL_PROJECT_ID.iam.gserviceaccount.com"
 
   # Create AppEngine app, if not already exists, in order to activate datastore
-  if ! gcloud services list | grep appengine
-  then
+  if ! gcloud services list | grep appengine; then
     gcloud app create --region=us-central
   fi
 
