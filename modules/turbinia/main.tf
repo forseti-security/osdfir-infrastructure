@@ -147,6 +147,7 @@ resource "google_compute_instance" "turbinia-server" {
   metadata = {
     gce-container-declaration = "spec:\n  containers:\n    - name: turbinia-server\n      image: '${var.turbinia_docker_image_server}'\n      securityContext:\n        privileged: false\n      env:\n        - name: TURBINIA_CONF\n          value: \"${local.turbinia_config}\"\n      stdin: true\n      tty: true\n  restartPolicy: Always\n\n"
     google-logging-enabled = "true"
+    google-monitoring-enabled = "true"
   }
 
   service_account {
@@ -180,6 +181,7 @@ resource "google_compute_instance" "turbinia-worker" {
   metadata = {
     gce-container-declaration = "spec:\n  containers:\n    - name: turbinia-worker\n      image: '${var.turbinia_docker_image_worker}'\n      volumeMounts:\n        - name: host-path-0\n          mountPath: /dev/\n          readOnly: true\n      securityContext:\n        privileged: true\n      env:\n        - name: TURBINIA_CONF\n          value: \"${local.turbinia_config}\"\n      stdin: true\n      tty: true\n  restartPolicy: Always\n  volumes:\n    - name: host-path-0\n      hostPath:\n        path: /dev\n\n"
     google-logging-enabled = "true"
+    google-monitoring-enabled = "true"
   }
 
   service_account {
