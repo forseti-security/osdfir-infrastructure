@@ -102,7 +102,7 @@ cd $DIR
 gcloud compute --project $DEVSHELL_PROJECT_ID networks subnets update default --region=$TURBINIA_REGION --enable-private-ip-google-access
 # Allow IAP so that we can still connect to these via gcloud and cloud console.
 # https://cloud.google.com/iap/docs/using-tcp-forwarding#tunneling_with_ssh
-if ! gcloud compute firewall-rules list | grep "allow-ssh-ingress-from-iap"; then
+if ! gcloud compute --project $DEVSHELL_PROJECT_ID firewall-rules list | grep "allow-ssh-ingress-from-iap"; then
   gcloud compute --project $DEVSHELL_PROJECT_ID firewall-rules create allow-ssh-ingress-from-iap --direction=INGRESS --action=allow --rules=tcp:22 --source-ranges=35.235.240.0/20
 fi
 
