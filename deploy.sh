@@ -124,7 +124,7 @@ while true; do
 done
 
 # Deploy Datastore indexes
-gcloud --project $DEVSHELL_PROJECT_ID -q datastore indexes create turbinia/data/index.yaml
+gcloud --project $DEVSHELL_PROJECT_ID -q datastore indexes create $DIR/modules/turbinia/data/index.yaml
 
 # Run Terraform to setup the rest of the infrastructure
 terraform init

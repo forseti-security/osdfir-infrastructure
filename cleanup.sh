@@ -93,7 +93,7 @@ gcloud -q services --project $DEVSHELL_PROJECT_ID disable cloudfunctions.googlea
 gcloud -q services --project $DEVSHELL_PROJECT_ID disable cloudbuild.googleapis.com
 
 # Cleanup Datastore indexes
-gcloud --project $DEVSHELL_PROJECT_ID -q datastore indexes cleanup turbinia/data/index-empty.yaml
+gcloud --project $DEVSHELL_PROJECT_ID -q datastore indexes cleanup $DIR/modules/turbinia/data/index-empty.yaml
 
 # Run Terraform to destroy the rest of the infrastructure
 echo "Running Terraform Destroy"
