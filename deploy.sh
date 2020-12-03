@@ -108,30 +108,36 @@ if ! gcloud compute --project $DEVSHELL_PROJECT_ID firewall-rules list | grep "a
 fi
 
 # Enable the Cloud NAT router so VMs have internet connectivity
-if ! gcloud compute routers list | grep nat-router; then
-  echo "Setting up Cloud NAT router"
-  gcloud --project $DEVSHELL_PROJECT_ID compute routers create nat-router --network=default --region=$TURBINIA_REGION
-  gcloud --project $DEVSHELL_PROJECT_ID compute routers nats create nat-config --router-region=$TURBINIA_REGION --router=nat-router --nat-all-subnet-ip-ranges --auto-allocate-nat-external-ips
+if [[ "$*" != *--no-cloudnat* ]] ; then
+  if ! gcloud compute routers list | grep nat-router; then
+    echo "Setting up Cloud NAT router"
+    gcloud --project $DEVSHELL_PROJECT_ID compute routers create nat-router --network=default --region=$TURBINIA_REGION
+    gcloud --project $DEVSHELL_PROJECT_ID compute routers nats create nat-config --router-region=$TURBINIA_REGION --router=nat-router --nat-all-subnet-ip-ranges --auto-allocate-nat-external-ips
+  fi
 fi
 
 # Deploy cloud functions
-gcloud -q services --project $DEVSHELL_PROJECT_ID enable cloudfunctions.googleapis.com
-gcloud -q services --project $DEVSHELL_PROJECT_ID enable cloudbuild.googleapis.com
+if [[ "$*" != *--no-cloudfunctions* ]] ; then
+  gcloud -q services --project $DEVSHELL_PROJECT_ID enable cloudfunctions.googleapis.com
+  gcloud -q services --project $DEVSHELL_PROJECT_ID enable cloudbuild.googleapis.com
 
-# Deploying cloud functions is flaky. Retry until success.
-while true; do
-  num_functions="$(gcloud functions --project $DEVSHELL_PROJECT_ID list | grep task | grep $TURBINIA_REGION | wc -l)"
-  if [[ "${num_functions}" -eq "3" ]]; then
-    echo "All Cloud Functions deployed"
-    break
-  fi
-  gcloud --project $DEVSHELL_PROJECT_ID -q functions deploy gettasks --region $TURBINIA_REGION --source modules/turbinia/data/ --runtime nodejs10 --trigger-http --memory 256MB --timeout 60s
-  gcloud --project $DEVSHELL_PROJECT_ID -q functions deploy closetask --region $TURBINIA_REGION --source modules/turbinia/data/ --runtime nodejs10 --trigger-http --memory 256MB --timeout 60s
-  gcloud --project $DEVSHELL_PROJECT_ID -q functions deploy closetasks  --region $TURBINIA_REGION --source modules/turbinia/data/ --runtime nodejs10 --trigger-http --memory 256MB --timeout 60s
-done
+  # Deploying cloud functions is flaky. Retry until success.
+  while true; do
+    num_functions="$(gcloud functions --project $DEVSHELL_PROJECT_ID list | grep task | grep $TURBINIA_REGION | wc -l)"
+    if [[ "${num_functions}" -eq "3" ]]; then
+      echo "All Cloud Functions deployed"
+      break
+    fi
+    gcloud --project $DEVSHELL_PROJECT_ID -q functions deploy gettasks --region $TURBINIA_REGION --source modules/turbinia/data/ --runtime nodejs10 --trigger-http --memory 256MB --timeout 60s
+    gcloud --project $DEVSHELL_PROJECT_ID -q functions deploy closetask --region $TURBINIA_REGION --source modules/turbinia/data/ --runtime nodejs10 --trigger-http --memory 256MB --timeout 60s
+    gcloud --project $DEVSHELL_PROJECT_ID -q functions deploy closetasks  --region $TURBINIA_REGION --source modules/turbinia/data/ --runtime nodejs10 --trigger-http --memory 256MB --timeout 60s
+  done
+fi
 
 # Deploy Datastore indexes
-gcloud --project $DEVSHELL_PROJECT_ID -q datastore indexes create $DIR/modules/turbinia/data/index.yaml
+if [[ "$*" != *--no-datastore* ]] ; then
+  gcloud --project $DEVSHELL_PROJECT_ID -q datastore indexes create $DIR/modules/turbinia/data/index.yaml
+fi
 
 # Run Terraform to setup the rest of the infrastructure
 terraform init

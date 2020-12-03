@@ -58,9 +58,11 @@ if ! gcloud compute --project $DEVSHELL_PROJECT_ID firewall-rules list | grep "a
 fi
 
 # Remove the Cloud NAT router
-if gcloud compute routers list | grep nat-router; then
-  echo "Removing Cloud NAT router"
-  gcloud -q --project $DEVSHELL_PROJECT_ID compute routers delete nat-router --region=$TURBINIA_REGION
+if [[ "$*" != *--no-cloudnat* ]] ; then
+  if gcloud compute routers list | grep nat-router; then
+    echo "Removing Cloud NAT router"
+    gcloud -q --project $DEVSHELL_PROJECT_ID compute routers delete nat-router --region=$TURBINIA_REGION
+  fi
 fi
 
 # Remove cloud functions
@@ -78,10 +80,12 @@ if [[ "$*" != *--no-cloudfunctions* ]] ; then
 fi
 
 # Cleanup Datastore indexes
-echo "Cleaning up Datastore indexes"
-cp $DIR/modules/turbinia/data/index-empty.yaml index.yaml
-gcloud --project $DEVSHELL_PROJECT_ID -q datastore indexes cleanup $DIR/modules/turbinia/data/index.yaml
-rm index.yaml
+if [[ "$*" != *--no-datastore* ]] ; then
+  echo "Cleaning up Datastore indexes"
+  cp $DIR/modules/turbinia/data/index-empty.yaml index.yaml
+  gcloud --project $DEVSHELL_PROJECT_ID -q datastore indexes cleanup $DIR/modules/turbinia/data/index.yaml
+  rm index.yaml
+fi
 
 # Run Terraform to destroy the rest of the infrastructure
 echo "Running Terraform Destroy"
