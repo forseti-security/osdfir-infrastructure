@@ -68,8 +68,10 @@ if [[ "$*" != *--use-gcloud-auth* ]] ; then
   SA_NAME="terraform"
   SA_MEMBER="serviceAccount:$SA_NAME@$DEVSHELL_PROJECT_ID.iam.gserviceaccount.com"
 
-  # Create service account
-  gcloud --project $DEVSHELL_PROJECT_ID iam service-accounts create "${SA_NAME}" --display-name "${SA_NAME}"
+  if ! gcloud --project $DEVSHELL_PROJECT_ID iam service-accounts list |grep terraform; then
+    # Create service account
+    gcloud --project $DEVSHELL_PROJECT_ID iam service-accounts create "${SA_NAME}" --display-name "${SA_NAME}"
+  fi
 
   # Grant IAM roles to the service account
   echo "Grant permissions on service account"
