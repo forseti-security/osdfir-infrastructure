@@ -66,6 +66,7 @@ DEPENDENCIES = [{
 }]
 
 # Prometheus monitoring config
+PROMETHEUS_ENABLED = False
 PROMETHEUS_ADDR = '0.0.0.0'
 PROMETHEUS_PORT = 8000
 
