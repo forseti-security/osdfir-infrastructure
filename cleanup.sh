@@ -111,7 +111,7 @@ if [[ "$*" != *--use-gcloud-auth* ]] ; then
 
   # Delete service account
   echo "Delete service account"
-  gcloud --project $DEVSHELL_PROJECT_ID iam service-accounts delete "${SA_NAME}" 
+  gcloud --project $DEVSHELL_PROJECT_ID iam service-accounts delete "${SA_NAME}@$DEVSHELL_PROJECT_ID.iam.gserviceaccount.com" 
 
   # Remove the service account key
   echo "Remove service account key"
