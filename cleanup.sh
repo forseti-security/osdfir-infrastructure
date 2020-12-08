@@ -98,16 +98,16 @@ if [[ "$*" != *--use-gcloud-auth* ]] ; then
 
   # Delete IAM roles from the service account
   echo "Delete permissions on service account"
-  gcloud projects remove-iam-policy-binding $DEVSHELL_PROJECT_ID --member=serviceAccount:$SA_MEMBER --role='roles/cloudfunctions.admin'
-  gcloud projects remove-iam-policy-binding $DEVSHELL_PROJECT_ID --member=serviceAccount:$SA_MEMBER --role='roles/cloudsql.admin'
-  gcloud projects remove-iam-policy-binding $DEVSHELL_PROJECT_ID --member=serviceAccount:$SA_MEMBER --role='roles/compute.admin'
-  gcloud projects remove-iam-policy-binding $DEVSHELL_PROJECT_ID --member=serviceAccount:$SA_MEMBER --role='roles/datastore.indexAdmin'
-  gcloud projects remove-iam-policy-binding $DEVSHELL_PROJECT_ID --member=serviceAccount:$SA_MEMBER --role='roles/editor'
-  gcloud projects remove-iam-policy-binding $DEVSHELL_PROJECT_ID --member=serviceAccount:$SA_MEMBER --role='roles/logging.logWriter'
-  gcloud projects remove-iam-policy-binding $DEVSHELL_PROJECT_ID --member=serviceAccount:$SA_MEMBER --role='roles/pubsub.admin'
-  gcloud projects remove-iam-policy-binding $DEVSHELL_PROJECT_ID --member=serviceAccount:$SA_MEMBER --role='roles/redis.admin'
-  gcloud projects remove-iam-policy-binding $DEVSHELL_PROJECT_ID --member=serviceAccount:$SA_MEMBER --role='roles/servicemanagement.admin'
-  gcloud projects remove-iam-policy-binding $DEVSHELL_PROJECT_ID --member=serviceAccount:$SA_MEMBER --role='roles/storage.admin'
+  gcloud projects remove-iam-policy-binding $DEVSHELL_PROJECT_ID --member=$SA_MEMBER --role='roles/cloudfunctions.admin'
+  gcloud projects remove-iam-policy-binding $DEVSHELL_PROJECT_ID --member=$SA_MEMBER --role='roles/cloudsql.admin'
+  gcloud projects remove-iam-policy-binding $DEVSHELL_PROJECT_ID --member=$SA_MEMBER --role='roles/compute.admin'
+  gcloud projects remove-iam-policy-binding $DEVSHELL_PROJECT_ID --member=$SA_MEMBER --role='roles/datastore.indexAdmin'
+  gcloud projects remove-iam-policy-binding $DEVSHELL_PROJECT_ID --member=$SA_MEMBER --role='roles/editor'
+  gcloud projects remove-iam-policy-binding $DEVSHELL_PROJECT_ID --member=$SA_MEMBER --role='roles/logging.logWriter'
+  gcloud projects remove-iam-policy-binding $DEVSHELL_PROJECT_ID --member=$SA_MEMBER --role='roles/pubsub.admin'
+  gcloud projects remove-iam-policy-binding $DEVSHELL_PROJECT_ID --member=$SA_MEMBER --role='roles/redis.admin'
+  gcloud projects remove-iam-policy-binding $DEVSHELL_PROJECT_ID --member=$SA_MEMBER --role='roles/servicemanagement.admin'
+  gcloud projects remove-iam-policy-binding $DEVSHELL_PROJECT_ID --member=$SA_MEMBER --role='roles/storage.admin'
 
   # Delete service account
   echo "Delete service account"
