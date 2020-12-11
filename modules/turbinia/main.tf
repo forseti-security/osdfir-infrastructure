@@ -165,6 +165,7 @@ resource "google_compute_instance" "turbinia-server" {
 
   labels = {
     container-vm = module.gce-server-container.vm_container_label
+    turbinia-prometheus = "true"
   }
 
   service_account {
@@ -272,6 +273,7 @@ resource "google_compute_instance" "turbinia-worker" {
 
   labels = {
     container-vm = module.gce-worker-container[count.index].vm_container_label
+    turbinia-prometheus = "true"
   }
 
   service_account {
