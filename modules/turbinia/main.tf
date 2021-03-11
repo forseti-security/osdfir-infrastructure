@@ -116,6 +116,10 @@ locals {
   turbinia_config = base64encode(data.template_file.turbinia-config-template.rendered)
 }
 
+data "template_file" "cloud-init" {
+  template = file("${path.module}/templates/cloud-init.tpl")
+}
+
 # # Turbinia server
 module "gce-server-container" {
   source = "terraform-google-modules/container-vm/google"
@@ -163,6 +167,7 @@ resource "google_compute_instance" "turbinia-server" {
     gce-container-declaration = module.gce-server-container.metadata_value
     google-logging-enabled = "true"
     google-monitoring-enabled = "true"
+    "user-data" = "${data.template_file.cloud-init.rendered}"
   }
 
   labels = {
@@ -272,6 +277,7 @@ resource "google_compute_instance" "turbinia-worker" {
     gce-container-declaration = module.gce-worker-container[count.index].metadata_value
     google-logging-enabled = "true"
     google-monitoring-enabled = "true"
+    "user-data" = "${data.template_file.cloud-init.rendered}"
   }
 
   labels = {
