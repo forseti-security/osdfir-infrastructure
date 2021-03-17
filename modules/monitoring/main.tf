@@ -42,6 +42,14 @@ data "template_file" "prometheus-startup-script" {
   }
 }
 
+data "template_file" "node-exporter-full" {
+  template = file("${path.module}/data/grafana/dashboards/node-exporter-full.json")
+
+  vars = {
+    DS_PROMETHEUS       = "Prometheus"
+  }
+}
+
 resource "google_compute_instance" "prometheus" {
   name         = "prometheus-server-${var.infrastructure_id}"
   machine_type = var.prometheus_server_machine_type
@@ -88,9 +96,64 @@ data "template_file" "grafana-startup-script" {
   template = file("${path.module}/templates/scripts/install-grafana.sh.tpl")
 
   vars = {
-    project       = var.gcp_project
-    zone          = var.gcp_zone
+    prom-server = "prometheus-server-${var.infrastructure_id}"
   }
+}
+
+
+module "grafana-container" {
+  source = "terraform-google-modules/container-vm/google"
+
+  container = {
+    name    = "grafana-container-${var.infrastructure_id}"
+    image   = var.grafana_server_docker_image
+    volumeMounts = [
+      {
+        name: "datasources"
+        mountPath: "/etc/grafana/provisioning/datasources"
+        readOnly: false
+      }
+    ]
+
+    securityContext = {
+      privileged : true
+    }
+    env = [
+      {
+        name  = "GF_SECURITY_ADMIN_USER"
+        value = "dev"
+      }, {
+        name  = "GF_SECURITY_ADMIN_PASSWORD"
+        value = "dev"
+      }, {
+        name  = "GF_SECURITY_DISABLE_GRAVATAR"
+        value = "true"
+      }, {
+        name = "GF_AUTH_ANONYMOUS_ENABLED"
+        value = "true"
+      }, {
+        name = "GF_USERS_AUTO_ASSIGN_ORG_ROLE"
+        value = "Viewer"
+      }, {
+        name = "GF_ANALYTICS_REPORTING_ENABLED"
+        value = "false"
+      }, {
+        name = "GF_ANALYTICS_CHECK_FOR_UPDATES"
+        value = "false"
+      }
+    ]
+    tty : true
+    stdin : true
+  }
+
+  restart_policy = "Always"
+
+  volumes = [
+    {
+      name = "datasources"
+      hostPath = {path="/tmp/datasources"}
+    }
+  ]
 }
 
 resource "google_compute_instance" "grafana" {
@@ -126,7 +189,12 @@ resource "google_compute_instance" "grafana" {
   service_account {
     scopes = ["compute-ro"]
   }
+  metadata = {
+    gce-container-declaration = module.grafana-container.metadata_value
+    google-logging-enabled = "true"
+    google-monitoring-enabled = "true"
+  }
 
   # Provision the machine with a script.
-  metadata_startup_script = data.template_file.install-grafana-script.rendered
+  metadata_startup_script = data.template_file.grafana-startup-script.rendered
 }

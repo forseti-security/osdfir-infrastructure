@@ -34,7 +34,34 @@ until [[ -f "$${BOOT_FINISHED_FILE}" ]]; do
   sleep 1
 done
 
-docker run grafana/grafana:latest 
+mkdir /tmp/datasources
+# Connect Prometheus server
+cat > /tmp/datasources/prometheus-conf.yml <<EOF
+apiVersion: 1
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: Server
+    url: http://${prom-server}:9090
+EOF
+
+mkdir /tmp/provisioning
+cat > /tmp/provisioning/dashboard-conf.yml <<EOF
+apiVersion: 1
+providers:
+  - name: 'OSDFIR'
+    orgId: 1
+    folder: ''
+    folderUid: ''
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards
+      foldersFromFilesStructure: true
+EOF
+
 
 # --- END MAIN ---
 
