@@ -18,6 +18,7 @@ if [[ "$*" == *--help ]] ; then
   echo "--no-cloudfunctions            Do not deploy Turbinia Cloud Functions"
   echo "--no-datastore                 Do not configure Turbinia Datastore"
   echo "--no-virtualenv                Do not install the Turbinia client in a virtual env"
+  echo "--no-monitoring                Do not deploy monitoring infrastructure"
   exit 1
 fi
 
@@ -219,6 +220,18 @@ if [[ -a $TURBINIA_CONFIG ]] ; then
   backup_file="${TURBINIA_CONFIG}.$( date +%s )"
   mv $TURBINIA_CONFIG $backup_file
   echo "Backing up old Turbinia config $TURBINIA_CONFIG to $backup_file"
+fi
+
+
+# Monitoring infrastructure
+MONITORING="1"
+if [[ "$*" == *--no-monitoring* ]] ; then
+  MONITORING="0"
+  echo "--no-monitoring found: Not deploying monitoring infrastructure."
+fi
+
+if [ $MONITORING -eq "1" ] ; then
+  terraform apply --target=module.monitoring -var gcp_project=$DEVSHELL_PROJECT_ID -var vpc_network=$VPC_NETWORK  -auto-approve
 fi
 
 terraform output turbinia-config > $TURBINIA_CONFIG

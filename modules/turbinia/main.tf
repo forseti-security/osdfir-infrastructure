@@ -112,6 +112,11 @@ data "template_file" "turbinia-config-template" {
   depends_on  = [google_project_service.services]
 }
 
+# Template for node exporter installation file
+data "template_file" "install-node-exporter" {
+  template = file("${path.module}/templates/scripts/install-node-exporter.sh.tpl")
+}
+
 locals {
   turbinia_config = base64encode(data.template_file.turbinia-config-template.rendered)
 }
@@ -164,6 +169,9 @@ resource "google_compute_instance" "turbinia-server" {
     google-logging-enabled = "true"
     google-monitoring-enabled = "true"
   }
+
+  # Install node exporter agent via startup script
+  metadata_startup_script = data.template_file.install-node-exporter.rendered
 
   labels = {
     container-vm = module.gce-server-container.vm_container_label
@@ -273,6 +281,9 @@ resource "google_compute_instance" "turbinia-worker" {
     google-logging-enabled = "true"
     google-monitoring-enabled = "true"
   }
+
+  # Install node exporter agent via startup script
+  metadata_startup_script = data.template_file.install-node-exporter.rendered
 
   labels = {
     container-vm = module.gce-worker-container[count.index].vm_container_label
