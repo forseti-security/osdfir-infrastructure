@@ -42,14 +42,6 @@ data "template_file" "prometheus-startup-script" {
   }
 }
 
-data "template_file" "node-exporter-full" {
-  template = file("${path.module}/data/grafana/dashboards/node-exporter-full.json")
-
-  vars = {
-    DS_PROMETHEUS       = "Prometheus"
-  }
-}
-
 resource "google_compute_instance" "prometheus" {
   name         = "prometheus-server-${var.infrastructure_id}"
   machine_type = var.prometheus_server_machine_type
