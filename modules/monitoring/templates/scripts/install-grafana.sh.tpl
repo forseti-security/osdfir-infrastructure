@@ -34,9 +34,12 @@ until [[ -f "$${BOOT_FINISHED_FILE}" ]]; do
   sleep 1
 done
 
-mkdir /tmp/datasources
+# Set up configuration outputs
+mkdir /tmp/grafana
+
+mkdir /tmp/grafana/datasources
 # Connect Prometheus server
-cat > /tmp/datasources/prometheus-conf.yml <<EOF
+cat > /tmp/grafana/datasources/prometheus-conf.yml <<EOF
 apiVersion: 1
 datasources:
   - name: Prometheus
@@ -45,8 +48,8 @@ datasources:
     url: http://${prom-server}:9090
 EOF
 
-mkdir /tmp/provisioning
-cat > /tmp/provisioning/dashboard-conf.yml <<EOF
+mkdir /tmp/grafana/provisioning
+cat > /tmp/grafana/provisioning/dashboard-conf.yml <<EOF
 apiVersion: 1
 providers:
   - name: 'OSDFIR'
@@ -62,6 +65,9 @@ providers:
       foldersFromFilesStructure: true
 EOF
 
+# Add dashboards
+mkdir /tmp/grafana/dashboards
+curl https://raw.githubusercontent.com/rfrail3/grafana-dashboards/master/prometheus/node-exporter-full.json -o /tmp/grafana/dashboards/node-exporter-full.json
 
 # --- END MAIN ---
 

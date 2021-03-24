@@ -99,13 +99,13 @@ module "grafana-container" {
   container = {
     name    = "grafana-container-${var.infrastructure_id}"
     image   = var.grafana_server_docker_image
-    volumeMounts = [
-      {
-        name: "datasources"
-        mountPath: "/etc/grafana/provisioning/datasources"
-        readOnly: false
-      }
-    ]
+    #volumeMounts = [
+    #  {
+    #    name: "provisioning"
+    #    mountPath: "/etc/grafana"
+    #    readOnly: false
+    #  }
+    #]
 
     securityContext = {
       privileged : true
@@ -132,6 +132,9 @@ module "grafana-container" {
       }, {
         name = "GF_ANALYTICS_CHECK_FOR_UPDATES"
         value = "false"
+      }, {
+        name = "GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH"
+        value = "/etc/grafana/dashboards/node-exporter-full.json"
       }
     ]
     tty : true
@@ -140,12 +143,12 @@ module "grafana-container" {
 
   restart_policy = "Always"
 
-  volumes = [
-    {
-      name = "datasources"
-      hostPath = {path="/tmp/datasources"}
-    }
-  ]
+  #volumes = [
+  #  {
+  #    name = "provisioning"
+  #    hostPath = {path="/tmp/grafana"}
+  #  }
+  #]
 }
 
 resource "google_compute_instance" "grafana" {
