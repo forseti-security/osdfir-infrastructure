@@ -35,25 +35,14 @@ until [[ -f "$${BOOT_FINISHED_FILE}" ]]; do
 done
 
 # Configure Prometheus.
-cat >> /tmp/prometheus.yml <<EOF
-global:
-  scrape_interval: 15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
-  # scrape_timeout is set to the global default (10s).
-  external_labels:
-      environment: turbinia-gcp_node
+mkdir /etc/prometheus
+wget https://raw.githubusercontent.com/wajihyassine/turbinia/monitoring-dev/monitoring/prometheus/prometheus.yaml -O /etc/prometheus/prometheus.yml
 
-scrape_configs:
-  - job_name: 'turbinia-gcp'
-    gce_sd_configs:
-        # The GCP Project
-        - project: '${project}'
-          zone: '${zone}'
-          filter: labels.turbinia-prometheus=true
-          refresh_interval: 120s
-          port: 9100
-EOF
+# Set GCP project/zone.
+sed -i s/"<project>"/"${project}"/ /etc/prometheus/prometheus.yml
+sed -i s/"<zone>"/"${zone}"/ /etc/prometheus/prometheus.yml
 
-docker run -p 9090:9090 -v /tmp/prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus:latest 
+docker run -p 9090:9090 -v /etc/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus:latest 
 
 # --- END MAIN ---
 

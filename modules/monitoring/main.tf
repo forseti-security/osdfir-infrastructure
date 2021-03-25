@@ -42,6 +42,37 @@ data "template_file" "prometheus-startup-script" {
   }
 }
 
+# module "prometheus-container" {
+#   source = "terraform-google-modules/container-vm/google"
+
+#   container = {
+#     name    = "prometheus-container-${var.infrastructure_id}"
+#     image   = var.prometheus_server_docker_image
+#     volumeMounts = [
+#       {
+#         name: "prometheus"
+#         mountPath: "/etc/prometheus"
+#       }
+#     ]
+
+#     securityContext = {
+#       privileged : true
+#     }
+
+#     tty : true
+#     stdin : true
+#   }
+
+#   restart_policy = "Always"
+
+#   volumes = [
+#     {
+#       name = "prometheus"
+#       hostPath = {path="/etc/prometheus"}
+#     }
+#   ]
+# }
+
 resource "google_compute_instance" "prometheus" {
   name         = "prometheus-server-${var.infrastructure_id}"
   machine_type = var.prometheus_server_machine_type
@@ -76,6 +107,11 @@ resource "google_compute_instance" "prometheus" {
     scopes = ["compute-ro"]
   }
 
+  metadata = {
+    google-logging-enabled = "true"
+    google-monitoring-enabled = "true"
+  }
+
   # Provision the machine with a script.
   metadata_startup_script = data.template_file.prometheus-startup-script.rendered
 }
@@ -88,7 +124,7 @@ data "template_file" "grafana-startup-script" {
   template = file("${path.module}/templates/scripts/install-grafana.sh.tpl")
 
   vars = {
-    prom-server = "prometheus-server-${var.infrastructure_id}"
+    prometheus-server = "prometheus-server-${var.infrastructure_id}"
   }
 }
 
@@ -99,13 +135,15 @@ module "grafana-container" {
   container = {
     name    = "grafana-container-${var.infrastructure_id}"
     image   = var.grafana_server_docker_image
-    #volumeMounts = [
-    #  {
-    #    name: "provisioning"
-    #    mountPath: "/etc/grafana"
-    #    readOnly: false
-    #  }
-    #]
+    volumeMounts = [
+      {
+        name: "provisioning"
+        mountPath: "/etc/grafana/provisioning"
+      }, {
+        name: "dashboards"
+        mountPath: "/etc/grafana/dashboards"
+      }
+    ]
 
     securityContext = {
       privileged : true
@@ -143,12 +181,15 @@ module "grafana-container" {
 
   restart_policy = "Always"
 
-  #volumes = [
-  #  {
-  #    name = "provisioning"
-  #    hostPath = {path="/tmp/grafana"}
-  #  }
-  #]
+  volumes = [
+    {
+      name = "provisioning"
+      hostPath = {path="/etc/grafana/provisioning"}
+    }, {
+      name = "dashboards"
+      hostPath = {path="/etc/grafana/dashboards"}
+    }
+  ]
 }
 
 resource "google_compute_instance" "grafana" {

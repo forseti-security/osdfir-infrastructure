@@ -34,40 +34,18 @@ until [[ -f "$${BOOT_FINISHED_FILE}" ]]; do
   sleep 1
 done
 
-# Set up configuration outputs
-mkdir /tmp/grafana
 
-mkdir /tmp/grafana/datasources
+mkdir -p /etc/grafana/provisioning/datasources
 # Connect Prometheus server
-cat > /tmp/grafana/datasources/prometheus-conf.yml <<EOF
-apiVersion: 1
-datasources:
-  - name: Prometheus
-    type: prometheus
-    access: Server
-    url: http://${prom-server}:9090
-EOF
+wget https://raw.githubusercontent.com/wajihyassine/turbinia/monitoring-dev/monitoring/grafana/provisioning/datasources/prometheus.yaml -O /etc/grafana/provisioning/datasources/prometheus.yml
+sed -i s/"<prometheus-server>"/"${prometheus-server}"/ /etc/grafana/provisioning/datasources/prometheus.yml
 
-mkdir /tmp/grafana/provisioning
-cat > /tmp/grafana/provisioning/dashboard-conf.yml <<EOF
-apiVersion: 1
-providers:
-  - name: 'OSDFIR'
-    orgId: 1
-    folder: ''
-    folderUid: ''
-    type: file
-    disableDeletion: false
-    updateIntervalSeconds: 10
-    allowUiUpdates: true
-    options:
-      path: /etc/grafana/provisioning/dashboards
-      foldersFromFilesStructure: true
-EOF
+mkdir -p /etc/grafana/provisioning/dashboards
+wget https://raw.githubusercontent.com/wajihyassine/turbinia/monitoring-dev/monitoring/grafana/provisioning/dashboards/turbinia.yaml -O /etc/grafana/provisioning/dashboards/turbinia.yml
 
-# Add dashboards
-mkdir /tmp/grafana/dashboards
-curl https://raw.githubusercontent.com/rfrail3/grafana-dashboards/master/prometheus/node-exporter-full.json -o /tmp/grafana/dashboards/node-exporter-full.json
+# Add dashboard
+mkdir -p /etc/grafana/dashboards
+wget https://raw.githubusercontent.com/rfrail3/grafana-dashboards/master/prometheus/node-exporter-full.json -O /etc/grafana/dashboards/node-exporter-full.json
 
 # --- END MAIN ---
 

@@ -42,6 +42,11 @@ variable "container_base_image" {
   default = "cos-cloud/cos-stable"
 }
 
+variable "prometheus_server_docker_image" {
+  description = "Prometheus server docker image"
+  default = "prom/prometheus:latest"
+}
+
 variable "prometheus_server_machine_type" {
   description = "Machine type for Prometheus server"
   default     = "n1-standard-2"
