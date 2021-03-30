@@ -72,7 +72,7 @@ DEPENDENCIES = [{
 # Prometheus monitoring config
 PROMETHEUS_ENABLED = True
 PROMETHEUS_ADDR = '0.0.0.0'
-PROMETHEUS_PORT = 9100
+PROMETHEUS_PORT = 9200
 
 # GCP
 TURBINIA_PROJECT      = '${project}'
