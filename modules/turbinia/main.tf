@@ -140,15 +140,6 @@ module "gce-server-container" {
   restart_policy = "Always"
 }
 
-# Template for node exporter installation file for Turbinia server
-data "template_file" "turbinia-server-startup" {
-  template = file("${path.module}/templates/scripts/install-node-exporter.sh.tpl")
-  vars = {
-    instance-name = "turbinia-server-${var.infrastructure_id}"
-    #container-metadata = module.gce-server-container.metadata_value
-  }
-}
-
 resource "google_compute_instance" "turbinia-server" {
   count        = var.turbinia_server_count
   name         = "turbinia-server-${var.infrastructure_id}"
@@ -168,8 +159,11 @@ resource "google_compute_instance" "turbinia-server" {
     }
   }
 
-  # Install node exporter agent via startup script
-  metadata_startup_script = data.template_file.turbinia-server-startup.rendered
+  metadata = {
+    gce-container-declaration = module.gce-server-container.metadata_value
+    google-logging-enabled = "true"
+    google-monitoring-enabled = "true"
+  }
 
   labels = {
     container-vm = module.gce-server-container.vm_container_label
@@ -249,16 +243,6 @@ module "gce-worker-container" {
   ]
 }
 
-# Template for node exporter installation file for Turbinia worker
-data "template_file" "turbinia-worker-startup" {
-  count = var.turbinia_worker_count
-  template = file("${path.module}/templates/scripts/install-node-exporter.sh.tpl")
-  vars = {
-    instance-name = "turbinia-worker-${var.infrastructure_id}"
-    #container-metadata = module.gce-worker-container[count.index].metadata_value
-  }
-}
-
 resource "google_compute_instance" "turbinia-worker" {
   count        = var.turbinia_worker_count
   name         = "turbinia-worker-${var.infrastructure_id}-${count.index}"
@@ -284,8 +268,11 @@ resource "google_compute_instance" "turbinia-worker" {
     mode        = "READ_WRITE"
   }
 
-  # Install node exporter agent via startup script
-  metadata_startup_script = data.template_file.turbinia-worker-startup[count.index].rendered
+  metadata = {
+    gce-container-declaration = module.gce-worker-container[count.index].metadata_value
+    google-logging-enabled = "true"
+    google-monitoring-enabled = "true"
+  }
 
   labels = {
     container-vm = module.gce-worker-container[count.index].vm_container_label
