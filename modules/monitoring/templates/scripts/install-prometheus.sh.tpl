@@ -42,7 +42,7 @@ wget https://raw.githubusercontent.com/wajihyassine/turbinia/monitoring-dev/moni
 sed -i s/"<project>"/"${project}"/ /etc/prometheus/prometheus.yml
 sed -i s/"<zone>"/"${zone}"/ /etc/prometheus/prometheus.yml
 
-docker run -p 9090:9090 -v /etc/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus:latest 
+#docker run -p 9090:9090 -v /etc/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus:latest 
 
 # --- END MAIN ---
 

@@ -42,36 +42,36 @@ data "template_file" "prometheus-startup-script" {
   }
 }
 
-# module "prometheus-container" {
-#   source = "terraform-google-modules/container-vm/google"
+module "prometheus-container" {
+  source = "terraform-google-modules/container-vm/google"
 
-#   container = {
-#     name    = "prometheus-container-${var.infrastructure_id}"
-#     image   = var.prometheus_server_docker_image
-#     volumeMounts = [
-#       {
-#         name: "prometheus"
-#         mountPath: "/etc/prometheus"
-#       }
-#     ]
+  container = {
+    name    = "prometheus-container-${var.infrastructure_id}"
+    image   = var.prometheus_server_docker_image
+    volumeMounts = [
+      {
+        name: "prometheus"
+        mountPath: "/etc/prometheus"
+      }
+    ]
 
-#     securityContext = {
-#       privileged : true
-#     }
+    securityContext = {
+      privileged : true
+    }
 
-#     tty : true
-#     stdin : true
-#   }
+    tty : true
+    stdin : true
+  }
 
-#   restart_policy = "Always"
+  restart_policy = "Always"
 
-#   volumes = [
-#     {
-#       name = "prometheus"
-#       hostPath = {path="/etc/prometheus"}
-#     }
-#   ]
-# }
+  volumes = [
+    {
+      name = "prometheus"
+      hostPath = {path="/etc/prometheus"}
+    }
+  ]
+}
 
 resource "google_compute_instance" "prometheus" {
   name         = "prometheus-server-${var.infrastructure_id}"
@@ -108,6 +108,7 @@ resource "google_compute_instance" "prometheus" {
   }
 
   metadata = {
+    gce-container-declaration = module.prometheus-container.metadata_value
     google-logging-enabled = "true"
     google-monitoring-enabled = "true"
   }
