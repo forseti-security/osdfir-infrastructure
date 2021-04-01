@@ -47,6 +47,9 @@ wget https://raw.githubusercontent.com/wajihyassine/turbinia/monitoring-dev/moni
 mkdir -p /etc/grafana/dashboards
 wget https://raw.githubusercontent.com/rfrail3/grafana-dashboards/master/prometheus/node-exporter-full.json -O /etc/grafana/dashboards/node-exporter-full.json
 
+# Application metrics dashboard
+wget https://raw.githubusercontent.com/wajihyassine/turbinia/monitoring-dev/monitoring/grafana/dashboards/turbinia-application-metrics.json -O /etc/grafana/dashboards/turbinia-application-metrics.json
+
 # --- END MAIN ---
 
 date > "$${STARTUP_FINISHED_FILE}"
