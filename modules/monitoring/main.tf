@@ -171,9 +171,6 @@ module "grafana-container" {
       }, {
         name = "GF_ANALYTICS_CHECK_FOR_UPDATES"
         value = "false"
-      }, {
-        name = "GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH"
-        value = "/etc/grafana/dashboards/node-exporter-full.json"
       }
     ]
     tty : true
