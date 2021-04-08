@@ -30,6 +30,11 @@ resource "google_project_service" "services" {
   disable_on_destroy = false
 }
 
+resource "random_string" "monitoring-admin-password" {
+  length = 16
+  special = false
+}
+
 #-----------------------#
 # Prometheus            #
 #-----------------------#
@@ -55,10 +60,6 @@ module "prometheus-container" {
       }
     ]
 
-    securityContext = {
-      privileged : true
-    }
-
     tty : true
     stdin : true
   }
@@ -83,7 +84,7 @@ resource "google_compute_instance" "prometheus" {
   # Allow to stop/start the machine to enable change machine type.
   allow_stopping_for_update = true
 
-  # Use default Ubuntu image as operating system.
+  # Use container os image as operating system.
   boot_disk {
     initialize_params {
       image = var.container_base_image
@@ -94,7 +95,6 @@ resource "google_compute_instance" "prometheus" {
   # Assign a generated public IP address. Needed for SSH access.
   network_interface {
     network       = var.vpc_network
-    access_config {}
   }
 
   # Tag for service enumeration.
@@ -146,25 +146,13 @@ module "grafana-container" {
       }
     ]
 
-    securityContext = {
-      privileged : true
-    }
     env = [
       {
         name  = "GF_SECURITY_ADMIN_USER"
-        value = "dev"
+        value = var.monitoring_admin_username
       }, {
         name  = "GF_SECURITY_ADMIN_PASSWORD"
-        value = "dev"
-      }, {
-        name  = "GF_SECURITY_DISABLE_GRAVATAR"
-        value = "true"
-      }, {
-        name = "GF_AUTH_ANONYMOUS_ENABLED"
-        value = "true"
-      }, {
-        name = "GF_USERS_AUTO_ASSIGN_ORG_ROLE"
-        value = "Viewer"
+        value = random_string.monitoring-admin-password.result
       }, {
         name = "GF_ANALYTICS_REPORTING_ENABLED"
         value = "false"
@@ -200,7 +188,7 @@ resource "google_compute_instance" "grafana" {
   # Allow to stop/start the machine to enable change machine type.
   allow_stopping_for_update = true
 
-  # Use default Ubuntu image as operating system.
+  # Use container os image as operating system.
   boot_disk {
     initialize_params {
       image = var.container_base_image
@@ -208,10 +196,8 @@ resource "google_compute_instance" "grafana" {
     }
   }
 
-  # Assign a generated public IP address. Needed for SSH access.
   network_interface {
     network       = var.vpc_network
-    access_config {}
   }
 
   # Tag for service enumeration.
@@ -223,6 +209,7 @@ resource "google_compute_instance" "grafana" {
   service_account {
     scopes = ["compute-ro"]
   }
+
   metadata = {
     gce-container-declaration = module.grafana-container.metadata_value
     google-logging-enabled = "true"

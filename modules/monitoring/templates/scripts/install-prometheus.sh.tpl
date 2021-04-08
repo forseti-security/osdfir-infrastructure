@@ -21,7 +21,7 @@ readonly BOOT_FINISHED_FILE="/var/lib/cloud/instance/boot-finished"
 readonly STARTUP_FINISHED_FILE="/var/lib/cloud/instance/startup-script-finished"
 
 # Redirect stdout and stderr to logfile.
-exec > /var/log/terraform_provision.log
+exec >> /var/log/terraform_provision.log
 exec 2>&1
 
 # Exit if the startup script has already been executed successfully.

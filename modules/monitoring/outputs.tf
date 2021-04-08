@@ -14,29 +14,12 @@
  * limitations under the License.
  */
 
-# Timesketch outputs
-output "timesketch-server-url" {
-  value = module.timesketch.timesketch-server-url
-}
-
-output "timesketch-admin-username" {
-  value = module.timesketch.timesketch-admin-username
-}
-
-output "timesketch-admin-password" {
-  value = module.timesketch.timesketch-admin-password
-}
-
-# Turbinia outputs
-output "turbinia-config" {
-  value = module.turbinia.turbinia-config
-}
-
-# Monitoring outputs
 output "monitoring-admin-username" {
-  value = module.monitoring.monitoring-admin-username
+  description = "Monitoring admin username"
+  value = var.monitoring_admin_username
 }
 
 output "monitoring-admin-password" {
-  value = module.monitoring.monitoring-admin-password
+  description = "Monitoring admin password"
+  value = random_string.monitoring-admin-password.result
 }

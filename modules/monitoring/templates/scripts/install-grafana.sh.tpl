@@ -21,7 +21,7 @@ readonly BOOT_FINISHED_FILE="/var/lib/cloud/instance/boot-finished"
 readonly STARTUP_FINISHED_FILE="/var/lib/cloud/instance/startup-script-finished"
 
 # Redirect stdout and stderr to logfile.
-exec > /var/log/terraform_provision.log
+exec >> /var/log/terraform_provision.log
 exec 2>&1
 
 # Exit if the startup script has already been executed successfully.
@@ -43,11 +43,11 @@ sed -i s/"<prometheus-server>"/"${prometheus-server}"/ /etc/grafana/provisioning
 mkdir -p /etc/grafana/provisioning/dashboards
 wget https://raw.githubusercontent.com/wajihyassine/turbinia/monitoring-dev/monitoring/grafana/provisioning/dashboards/turbinia.yaml -O /etc/grafana/provisioning/dashboards/turbinia.yml
 
-# Add dashboard
+# Add node exporter dashboard
 mkdir -p /etc/grafana/dashboards
 wget https://raw.githubusercontent.com/rfrail3/grafana-dashboards/master/prometheus/node-exporter-full.json -O /etc/grafana/dashboards/node-exporter-full.json
 
-# Application metrics dashboard
+# Add application metrics dashboard
 wget https://raw.githubusercontent.com/wajihyassine/turbinia/monitoring-dev/monitoring/grafana/dashboards/turbinia-application-metrics.json -O /etc/grafana/dashboards/turbinia-application-metrics.json
 
 # --- END MAIN ---

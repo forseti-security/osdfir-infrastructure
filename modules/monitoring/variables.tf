@@ -28,11 +28,6 @@ variable "gcp_zone" {
   default     = "us-central1-f"
 }
 
-variable "gcp_ubuntu_1804_image" {
-  description = "Ubuntu version 18.04 image"
-  default     = "ubuntu-os-cloud/ubuntu-1804-lts"
-}
-
 variable "infrastructure_id" {
   description = "Unique indentifier for the deployment"
 }
@@ -77,3 +72,7 @@ variable "vpc_network" {
   default = "default"
 }
 
+variable "monitoring_admin_username" {
+  description = "Monitoring admin user"
+  default     = "admin"
+}
