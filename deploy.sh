@@ -228,6 +228,7 @@ if [[ "$*" == *--no-monitoring* ]] ; then
   echo "--no-monitoring found: Not deploying monitoring infrastructure."
 else
   terraform apply --target=module.monitoring -var gcp_project=$DEVSHELL_PROJECT_ID -var vpc_network=$VPC_NETWORK  -auto-approve
+  terraform refresh -var gcp_project=$DEVSHELL_PROJECT_ID 
   user="$(terraform output monitoring-admin-username)"
   pass="$(terraform output monitoring-admin-password)"
   
