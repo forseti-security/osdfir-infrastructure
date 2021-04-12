@@ -37,18 +37,18 @@ done
 
 mkdir -p /etc/grafana/provisioning/datasources
 # Connect Prometheus server
-wget https://raw.githubusercontent.com/wajihyassine/turbinia/monitoring-dev/monitoring/grafana/provisioning/datasources/prometheus.yaml -O /etc/grafana/provisioning/datasources/prometheus.yml
+wget https://raw.githubusercontent.com/google/turbinia/master/monitoring/grafana/provisioning/datasources/prometheus.yaml -O /etc/grafana/provisioning/datasources/prometheus.yml
 sed -i s/"<prometheus-server>"/"${prometheus-server}"/ /etc/grafana/provisioning/datasources/prometheus.yml
 
 mkdir -p /etc/grafana/provisioning/dashboards
-wget https://raw.githubusercontent.com/wajihyassine/turbinia/monitoring-dev/monitoring/grafana/provisioning/dashboards/turbinia.yaml -O /etc/grafana/provisioning/dashboards/turbinia.yml
+wget https://raw.githubusercontent.com/google/turbinia/master/monitoring/grafana/provisioning/dashboards/turbinia.yaml -O /etc/grafana/provisioning/dashboards/turbinia.yml
 
 # Add node exporter dashboard
 mkdir -p /etc/grafana/dashboards
 wget https://raw.githubusercontent.com/rfrail3/grafana-dashboards/master/prometheus/node-exporter-full.json -O /etc/grafana/dashboards/node-exporter-full.json
 
 # Add application metrics dashboard
-wget https://raw.githubusercontent.com/wajihyassine/turbinia/monitoring-dev/monitoring/grafana/dashboards/turbinia-application-metrics.json -O /etc/grafana/dashboards/turbinia-application-metrics.json
+wget https://raw.githubusercontent.com/google/turbinia/master/monitoring/grafana/dashboards/turbinia-application-metrics.json -O /etc/grafana/dashboards/turbinia-application-metrics.json
 
 # --- END MAIN ---
 

@@ -36,7 +36,7 @@ done
 
 # Configure Prometheus.
 mkdir /etc/prometheus
-wget https://raw.githubusercontent.com/wajihyassine/turbinia/monitoring-dev/monitoring/prometheus/prometheus.yaml -O /etc/prometheus/prometheus.yml
+wget https://raw.githubusercontent.com/google/turbinia/master/monitoring/prometheus/prometheus.yaml -O /etc/prometheus/prometheus.yml
 
 # Set GCP project/zone.
 sed -i s/"<project>"/"${project}"/ /etc/prometheus/prometheus.yml
