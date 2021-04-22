@@ -228,7 +228,7 @@ if [[ -a $TURBINIA_CONFIG ]] ; then
   echo "Backing up old Turbinia config $TURBINIA_CONFIG to $backup_file"
 fi
 
-terraform output turbinia-config > $TURBINIA_CONFIG
+terraform output -raw turbinia-config > $TURBINIA_CONFIG
 sed -i s/"\/var\/log\/turbinia\/turbinia.log"/"\/tmp\/turbinia.log"/ $TURBINIA_CONFIG
 
 echo
