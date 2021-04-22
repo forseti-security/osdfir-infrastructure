@@ -10,6 +10,7 @@ if [[ "$*" == *--help ]] ; then
   echo "Terraform deployment script for Turbinia and Timesketch"
   echo "Options:"
   echo "--no-timesketch                Do not deploy timesketch"
+  echo "--no-turbinia                  Do not deploy turbinia"
   echo "--build-release-test           Deploy Turbinia release test docker image"
   echo "--build-dev                    Deploy Turbinia development docker image"
   echo "--build-experimental           Deploy Turbinia experimental docker image"
@@ -70,20 +71,26 @@ if [[ "$*" == *--no-timesketch* ]] ; then
   echo "--no-timesketch found: Not deploying Timesketch."
 fi
 
-# TODO: Better flag handling
-DOCKER_IMAGE=""
-if [[ "$*" == *--build-release-test* ]] ; then
-  DOCKER_IMAGE="-var turbinia_docker_image_server=us-docker.pkg.dev/osdfir-registry/turbinia/release/turbinia-server-release-test:latest"
-  DOCKER_IMAGE="$DOCKER_IMAGE -var turbinia_docker_image_worker=us-docker.pkg.dev/osdfir-registry/turbinia/release/turbinia-worker-release-test:latest"
-  echo "Setting docker image to $DOCKER_IMAGE"
-elif [[ "$*" == *--build-dev* ]] ; then
-  DOCKER_IMAGE="-var turbinia_docker_image_server=us-docker.pkg.dev/osdfir-registry/turbinia/release/turbinia-server-dev:latest"
-  DOCKER_IMAGE="$DOCKER_IMAGE -var turbinia_docker_image_worker=us-docker.pkg.dev/osdfir-registry/turbinia/release/turbinia-worker-dev:latest"
-  echo "Setting docker image to $DOCKER_IMAGE"
-elif [[ "$*" == *--build-experimental* ]] ; then
-  DOCKER_IMAGE="-var turbinia_docker_image_server=us-docker.pkg.dev/osdfir-registry/turbinia/release/turbinia-server-experimental:latest"
-  DOCKER_IMAGE="$DOCKER_IMAGE -var turbinia_docker_image_worker=us-docker.pkg.dev/osdfir-registry/turbinia/release/turbinia-worker-experimental:latest"
-  echo "Setting docker image to $DOCKER_IMAGE"
+TURBINIA="1"
+if [[ "$*" == *--no-turbinia* ]] ; then
+  TURBINIA="0"
+  echo "--no-turbinia found: Not deploying Turbinia."
+else
+  # TODO: Better flag handling
+  DOCKER_IMAGE=""
+  if [[ "$*" == *--build-release-test* ]] ; then
+    DOCKER_IMAGE="-var turbinia_docker_image_server=us-docker.pkg.dev/osdfir-registry/turbinia/release/turbinia-server-release-test:latest"
+    DOCKER_IMAGE="$DOCKER_IMAGE -var turbinia_docker_image_worker=us-docker.pkg.dev/osdfir-registry/turbinia/release/turbinia-worker-release-test:latest"
+    echo "Setting docker image to $DOCKER_IMAGE"
+  elif [[ "$*" == *--build-dev* ]] ; then
+    DOCKER_IMAGE="-var turbinia_docker_image_server=us-docker.pkg.dev/osdfir-registry/turbinia/release/turbinia-server-dev:latest"
+    DOCKER_IMAGE="$DOCKER_IMAGE -var turbinia_docker_image_worker=us-docker.pkg.dev/osdfir-registry/turbinia/release/turbinia-worker-dev:latest"
+    echo "Setting docker image to $DOCKER_IMAGE"
+  elif [[ "$*" == *--build-experimental* ]] ; then
+    DOCKER_IMAGE="-var turbinia_docker_image_server=us-docker.pkg.dev/osdfir-registry/turbinia/release/turbinia-server-experimental:latest"
+    DOCKER_IMAGE="$DOCKER_IMAGE -var turbinia_docker_image_worker=us-docker.pkg.dev/osdfir-registry/turbinia/release/turbinia-worker-experimental:latest"
+    echo "Setting docker image to $DOCKER_IMAGE"
+  fi
 fi
 
 # Use local `gcloud auth` credentials rather than creating new Service Account.
@@ -169,7 +176,7 @@ fi
 terraform init
 if [ $TIMESKETCH -eq "1" ] ; then
   terraform apply -var gcp_project=$DEVSHELL_PROJECT_ID $DOCKER_IMAGE -var vpc_network=$VPC_NETWORK -auto-approve
-else
+elif [ $TURBINIA -eq "1" ] ; then
   terraform apply --target=module.turbinia -var gcp_project=$DEVSHELL_PROJECT_ID $DOCKER_IMAGE -var vpc_network=$VPC_NETWORK  -auto-approve
 fi
 
