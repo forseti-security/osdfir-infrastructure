@@ -229,7 +229,6 @@ if [[ -a $TURBINIA_CONFIG ]] ; then
   echo "Backing up old Turbinia config $TURBINIA_CONFIG to $backup_file"
 fi
 
-
 # Monitoring infrastructure
 if [[ "$*" == *--no-monitoring* ]] ; then
   echo "--no-monitoring found: Not deploying monitoring infrastructure."
@@ -247,7 +246,7 @@ else
 fi
 
 if [[ $TURBINIA -eq "1" ]] ; then
-  terraform output turbinia-config > $TURBINIA_CONFIG
+  terraform output -raw turbinia-config > $TURBINIA_CONFIG
   sed -i s/"\/var\/log\/turbinia\/turbinia.log"/"\/tmp\/turbinia.log"/ $TURBINIA_CONFIG
 fi
 
