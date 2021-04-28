@@ -10,6 +10,7 @@ if [[ "$*" == *--help ]] ; then
   echo "Terraform deployment script for Turbinia and Timesketch"
   echo "Options:"
   echo "--no-timesketch                Do not deploy timesketch"
+  echo "--no-turbinia                  Do not deploy turbinia"
   echo "--build-release-test           Deploy Turbinia release test docker image"
   echo "--build-dev                    Deploy Turbinia development docker image"
   echo "--build-experimental           Deploy Turbinia experimental docker image"
@@ -18,6 +19,7 @@ if [[ "$*" == *--help ]] ; then
   echo "--no-cloudfunctions            Do not deploy Turbinia Cloud Functions"
   echo "--no-datastore                 Do not configure Turbinia Datastore"
   echo "--no-virtualenv                Do not install the Turbinia client in a virtual env"
+  echo "--no-monitoring                Do not deploy the monitoring infrastructure"
   exit 1
 fi
 
@@ -65,25 +67,31 @@ echo "Deploying to project $DEVSHELL_PROJECT_ID"
 
 
 TIMESKETCH="1"
+DOCKER_IMAGE=""
 if [[ "$*" == *--no-timesketch* ]] ; then
   TIMESKETCH="0"
   echo "--no-timesketch found: Not deploying Timesketch."
 fi
 
-# TODO: Better flag handling
-DOCKER_IMAGE=""
-if [[ "$*" == *--build-release-test* ]] ; then
-  DOCKER_IMAGE="-var turbinia_docker_image_server=us-docker.pkg.dev/osdfir-registry/turbinia/release/turbinia-server-release-test:latest"
-  DOCKER_IMAGE="$DOCKER_IMAGE -var turbinia_docker_image_worker=us-docker.pkg.dev/osdfir-registry/turbinia/release/turbinia-worker-release-test:latest"
-  echo "Setting docker image to $DOCKER_IMAGE"
-elif [[ "$*" == *--build-dev* ]] ; then
-  DOCKER_IMAGE="-var turbinia_docker_image_server=us-docker.pkg.dev/osdfir-registry/turbinia/release/turbinia-server-dev:latest"
-  DOCKER_IMAGE="$DOCKER_IMAGE -var turbinia_docker_image_worker=us-docker.pkg.dev/osdfir-registry/turbinia/release/turbinia-worker-dev:latest"
-  echo "Setting docker image to $DOCKER_IMAGE"
-elif [[ "$*" == *--build-experimental* ]] ; then
-  DOCKER_IMAGE="-var turbinia_docker_image_server=us-docker.pkg.dev/osdfir-registry/turbinia/release/turbinia-server-experimental:latest"
-  DOCKER_IMAGE="$DOCKER_IMAGE -var turbinia_docker_image_worker=us-docker.pkg.dev/osdfir-registry/turbinia/release/turbinia-worker-experimental:latest"
-  echo "Setting docker image to $DOCKER_IMAGE"
+TURBINIA="1"
+if [[ "$*" == *--no-turbinia* ]] ; then
+  TURBINIA="0"
+  echo "--no-turbinia found: Not deploying Turbinia."
+else
+  # TODO: Better flag handling
+  if [[ "$*" == *--build-release-test* ]] ; then
+    DOCKER_IMAGE="-var turbinia_docker_image_server=us-docker.pkg.dev/osdfir-registry/turbinia/release/turbinia-server-release-test:latest"
+    DOCKER_IMAGE="$DOCKER_IMAGE -var turbinia_docker_image_worker=us-docker.pkg.dev/osdfir-registry/turbinia/release/turbinia-worker-release-test:latest"
+    echo "Setting docker image to $DOCKER_IMAGE"
+  elif [[ "$*" == *--build-dev* ]] ; then
+    DOCKER_IMAGE="-var turbinia_docker_image_server=us-docker.pkg.dev/osdfir-registry/turbinia/release/turbinia-server-dev:latest"
+    DOCKER_IMAGE="$DOCKER_IMAGE -var turbinia_docker_image_worker=us-docker.pkg.dev/osdfir-registry/turbinia/release/turbinia-worker-dev:latest"
+    echo "Setting docker image to $DOCKER_IMAGE"
+  elif [[ "$*" == *--build-experimental* ]] ; then
+    DOCKER_IMAGE="-var turbinia_docker_image_server=us-docker.pkg.dev/osdfir-registry/turbinia/release/turbinia-server-experimental:latest"
+    DOCKER_IMAGE="$DOCKER_IMAGE -var turbinia_docker_image_worker=us-docker.pkg.dev/osdfir-registry/turbinia/release/turbinia-worker-experimental:latest"
+    echo "Setting docker image to $DOCKER_IMAGE"
+  fi
 fi
 
 # Use local `gcloud auth` credentials rather than creating new Service Account.
@@ -168,8 +176,10 @@ fi
 # Run Terraform to setup the rest of the infrastructure
 terraform init
 if [ $TIMESKETCH -eq "1" ] ; then
-  terraform apply -var gcp_project=$DEVSHELL_PROJECT_ID $DOCKER_IMAGE -var vpc_network=$VPC_NETWORK -auto-approve
-else
+  terraform apply --target=module.timesketch -var gcp_project=$DEVSHELL_PROJECT_ID $DOCKER_IMAGE -var vpc_network=$VPC_NETWORK -auto-approve
+fi
+
+if [ $TURBINIA -eq "1" ] ; then
   terraform apply --target=module.turbinia -var gcp_project=$DEVSHELL_PROJECT_ID $DOCKER_IMAGE -var vpc_network=$VPC_NETWORK  -auto-approve
 fi
 
@@ -221,8 +231,26 @@ if [[ -a $TURBINIA_CONFIG ]] ; then
   echo "Backing up old Turbinia config $TURBINIA_CONFIG to $backup_file"
 fi
 
-terraform output -raw turbinia-config > $TURBINIA_CONFIG
-sed -i s/"\/var\/log\/turbinia\/turbinia.log"/"\/tmp\/turbinia.log"/ $TURBINIA_CONFIG
+# Monitoring infrastructure
+if [[ "$*" == *--no-monitoring* ]] ; then
+  echo "--no-monitoring found: Not deploying monitoring infrastructure."
+else
+  terraform apply --target=module.monitoring -var gcp_project=$DEVSHELL_PROJECT_ID -var vpc_network=$VPC_NETWORK  -auto-approve
+  terraform refresh -var gcp_project=$DEVSHELL_PROJECT_ID 
+  user="$(terraform output monitoring-admin-username)"
+  pass="$(terraform output monitoring-admin-password)"
+  
+  echo "****************************************************************************"
+  echo "Grafana Credentials"
+  echo "User: ${user}"
+  echo "Password: ${pass}"
+  echo "****************************************************************************"
+fi
+
+if [[ $TURBINIA -eq "1" ]] ; then
+  terraform output -raw turbinia-config > $TURBINIA_CONFIG
+  sed -i s/"\/var\/log\/turbinia\/turbinia.log"/"\/tmp\/turbinia.log"/ $TURBINIA_CONFIG
+fi
 
 echo
 echo "Deployment done"

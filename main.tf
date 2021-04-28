@@ -60,6 +60,18 @@ module "turbinia" {
   vpc_network                  = var.vpc_network
 }
 
+#------------#
+# Monitoring #
+#------------#
+module "monitoring" {
+  source                       = "./modules/monitoring"
+  gcp_project                  = var.gcp_project
+  gcp_region                   = var.gcp_region
+  gcp_zone                     = var.gcp_zone
+  infrastructure_id            = coalesce(var.infrastructure_id, random_id.infrastructure-random-id.hex)
+  vpc_network                  = var.vpc_network
+}
+
 # Random ID for creating unique resource names.
 resource "random_id" "infrastructure-random-id" {
   byte_length = 8
