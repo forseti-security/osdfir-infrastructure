@@ -177,7 +177,9 @@ fi
 terraform init
 if [ $TIMESKETCH -eq "1" ] ; then
   terraform apply --target=module.timesketch -var gcp_project=$DEVSHELL_PROJECT_ID $DOCKER_IMAGE -var vpc_network=$VPC_NETWORK -auto-approve
-elif [ $TURBINIA -eq "1" ] ; then
+fi
+
+if [ $TURBINIA -eq "1" ] ; then
   terraform apply --target=module.turbinia -var gcp_project=$DEVSHELL_PROJECT_ID $DOCKER_IMAGE -var vpc_network=$VPC_NETWORK  -auto-approve
 fi
 
