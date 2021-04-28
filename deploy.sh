@@ -67,6 +67,7 @@ echo "Deploying to project $DEVSHELL_PROJECT_ID"
 
 
 TIMESKETCH="1"
+DOCKER_IMAGE=""
 if [[ "$*" == *--no-timesketch* ]] ; then
   TIMESKETCH="0"
   echo "--no-timesketch found: Not deploying Timesketch."
@@ -78,7 +79,6 @@ if [[ "$*" == *--no-turbinia* ]] ; then
   echo "--no-turbinia found: Not deploying Turbinia."
 else
   # TODO: Better flag handling
-  DOCKER_IMAGE=""
   if [[ "$*" == *--build-release-test* ]] ; then
     DOCKER_IMAGE="-var turbinia_docker_image_server=us-docker.pkg.dev/osdfir-registry/turbinia/release/turbinia-server-release-test:latest"
     DOCKER_IMAGE="$DOCKER_IMAGE -var turbinia_docker_image_worker=us-docker.pkg.dev/osdfir-registry/turbinia/release/turbinia-worker-release-test:latest"
