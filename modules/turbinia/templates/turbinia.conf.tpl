@@ -16,57 +16,79 @@ DEBUG_TASKS         = False
 DOCKER_ENABLED = False
 
 # Any jobs added to this list will disable it from being used.
-DISABLED_JOBS = ['VolatilityJob']
+DISABLED_JOBS = ['VolatilityJob', 'BinaryExtractorJob', 'BulkExtractorJob', 'PhotorecJob']
 
 # Configure additional job dependency checks below.
 DEPENDENCIES = [{
     'job': 'BinaryExtractorJob',
     'programs': ['image_export.py'],
-    'docker_image': None
+    'docker_image': None,
+    'timeout': 7200
 }, {
     'job': 'BulkExtractorJob',
     'programs': ['bulk_extractor'],
-    'docker_image': None
+    'docker_image': None,
+    'timeout': 14400
+}, {
+    'job': 'FsstatJob',
+    'programs': ['fsstat'],
+    'docker_image': None,
+    'timeout': 1800
 }, {
     'job': 'GrepJob',
     'programs': ['grep'],
-    'docker_image': None
+    'docker_image': None,
+    'timeout': 1800
 }, {
     'job': 'HadoopAnalysisJob',
     'programs': ['strings'],
-    'docker_image': None
+    'docker_image': None,
+    'timeout': 1200
 }, {
     'job': 'HindsightJob',
     'programs': ['hindsight.py'],
-    'docker_image': None
+    'docker_image': None,
+    'timeout': 1200
 }, {
     'job': 'JenkinsAnalysisJob',
     'programs': ['john'],
-    'docker_image': None
+    'docker_image': None,
+    'timeout': 1200
 }, {
     'job': 'PartitionEnumerationJob',
     'programs': ['bdemount'],
-    'docker_image': None
-}, {
-    'job': 'PhotorecJob',
-    'programs': ['photorec'],
-    'docker_image': None
+    'docker_image': None,
+    'timeout': 1200
 }, {
     'job': 'PlasoJob',
     'programs': ['log2timeline.py'],
-    'docker_image': None
+    'docker_image': None,
+    'timeout': 86400
+}, {
+    'job': 'PhotorecJob',
+    'programs': ['photorec'],
+    'docker_image': None,
+    'timeout': 14400
 }, {
     'job': 'PsortJob',
     'programs': ['psort.py'],
-    'docker_image': None
+    'docker_image': None,
+    'timeout': 3600
 }, {
     'job': 'StringsJob',
     'programs': ['strings'],
-    'docker_image': None
+    'docker_image': None,
+    'timeout': 3600
 }, {
     'job': 'VolatilityJob',
     'programs': ['vol.py'],
-    'docker_image': None
+    'docker_image': None,
+    'timeout': 3600
+}, {
+    'job': 'DockerContainersEnumerationJob',
+    'programs': ['de.py'],
+    'docker_image': None,
+    'timeout': 1200
 }]
 
 # Prometheus monitoring config
