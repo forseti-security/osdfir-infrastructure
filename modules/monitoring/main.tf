@@ -38,12 +38,21 @@ resource "random_string" "monitoring-admin-password" {
 #-----------------------#
 # Prometheus            #
 #-----------------------#
+resource "google_compute_disk" "promd" {
+  project = var.gcp_project
+  name    = "prometheus-${var.infrastructure_id}-data-disk"
+  type    = "pd-standard"
+  zone    = var.gcp_zone
+  size    = 1000
+}
+
 data "template_file" "prometheus-startup-script" {
   template = file("${path.module}/templates/scripts/install-prometheus.sh.tpl")
 
   vars = {
     project       = var.gcp_project
     zone          = var.gcp_zone
+    prom-disk = "prometheus-${var.infrastructure_id}-data-disk"
   }
 }
 
@@ -55,8 +64,11 @@ module "prometheus-container" {
     image   = var.prometheus_server_docker_image
     volumeMounts = [
       {
-        name: "prometheus"
+        name: "prometheus-config"
         mountPath: "/etc/prometheus"
+      }, {
+        name: "prometheus-data"
+        mountPath: "/prometheus"
       }
     ]
 
@@ -68,8 +80,14 @@ module "prometheus-container" {
 
   volumes = [
     {
-      name = "prometheus"
+      name = "prometheus-config"
       hostPath = {path="/etc/prometheus"}
+    }, {
+      name = "prometheus-data"
+      gcePersistentDisk = {
+        pdName="prometheus-${var.infrastructure_id}-data-disk"
+        fsType="ext4"
+        }
     }
   ]
 }
@@ -90,6 +108,12 @@ resource "google_compute_instance" "prometheus" {
       image = var.container_base_image
       size  = var.prometheus_server_disk_size_gb
     }
+  }
+
+  attached_disk {
+    source = google_compute_disk.promd.self_link
+    device_name = "prometheus-${var.infrastructure_id}-data-disk"
+    mode = "READ_WRITE"
   }
 
   # Assign a generated public IP address. Needed for SSH access.
@@ -121,11 +145,20 @@ resource "google_compute_instance" "prometheus" {
 #-----------------------#
 # Grafana               #
 #-----------------------#
+resource "google_compute_disk" "grafd" {
+  project = var.gcp_project
+  name    = "grafana-${var.infrastructure_id}-data-disk"
+  type    = "pd-standard"
+  zone    = var.gcp_zone
+  size    = 1000
+}
+
 data "template_file" "grafana-startup-script" {
   template = file("${path.module}/templates/scripts/install-grafana.sh.tpl")
 
   vars = {
     prometheus-server = "prometheus-server-${var.infrastructure_id}"
+    grafana-disk = "grafana-${var.infrastructure_id}-data-disk"
   }
 }
 
@@ -143,6 +176,9 @@ module "grafana-container" {
       }, {
         name: "dashboards"
         mountPath: "/etc/grafana/dashboards"
+      }, {
+        name: "data"
+        mountPath: "/var/lib/grafana"
       }
     ]
 
@@ -174,6 +210,12 @@ module "grafana-container" {
     }, {
       name = "dashboards"
       hostPath = {path="/etc/grafana/dashboards"}
+    }, {
+      name = "data"
+      gcePersistentDisk = {
+        pdName="grafana-${var.infrastructure_id}-data-disk"
+        fsType="ext4"
+        }
     }
   ]
 }
@@ -194,6 +236,12 @@ resource "google_compute_instance" "grafana" {
       image = var.container_base_image
       size  = var.grafana_server_disk_size_gb
     }
+  }
+
+  attached_disk {
+    source = google_compute_disk.grafd.self_link
+    device_name = "grafana-${var.infrastructure_id}-data-disk"
+    mode = "READ_WRITE"
   }
 
   network_interface {
