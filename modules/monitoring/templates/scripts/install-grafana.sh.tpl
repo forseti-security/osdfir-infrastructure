@@ -34,6 +34,8 @@ until [[ -f "$${BOOT_FINISHED_FILE}" ]]; do
   sleep 1
 done
 
+# Format attached disk and set owner as grafana for mounting
+sudo mkfs.ext4 -m 0 -E lazy_itable_init=0,lazy_journal_init=0,discard -E root_owner=472:472 /dev/disk/by-id/google-"${grafana-disk}"
 
 mkdir -p /etc/grafana/provisioning/datasources
 # Connect Prometheus server
