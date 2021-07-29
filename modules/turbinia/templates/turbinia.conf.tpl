@@ -11,6 +11,7 @@ SINGLE_RUN          = False
 MOUNT_DIR_PREFIX    = '/mnt/turbinia'
 SHARED_FILESYSTEM   = False
 DEBUG_TASKS         = False
+RECIPE_FILE_DIR     = '/etc/turbinia/recipes'
 
 # This will enable the usage of docker containers for the worker.
 DOCKER_ENABLED = False
