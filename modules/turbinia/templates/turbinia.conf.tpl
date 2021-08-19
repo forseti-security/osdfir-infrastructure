@@ -6,6 +6,8 @@ OUTPUT_DIR          = '${output_dir}'
 TMP_DIR             = '${tmp_dir}'
 LOG_FILE            = '/var/log/turbinia/turbinia.log'
 LOCK_FILE           = '/var/lock/turbinia-worker.lock'
+RESOURCE_FILE       = '${output_dir}/turbinia-state.json'
+RESOURCE_FILE_LOCK  = '${output_dir}/turbinia-state.json.lock'
 SLEEP_TIME          = 10
 SINGLE_RUN          = False
 MOUNT_DIR_PREFIX    = '/mnt/turbinia'
@@ -117,3 +119,10 @@ KOMBU_DURABLE         = True
 REDIS_HOST            = None
 REDIS_PORT            = None
 REDIS_DB              = None
+
+# Email notification config
+EMAIL_NOTIFICATIONS = False
+EMAIL_HOST_ADDRESS = None
+EMAIL_PORT = None
+EMAIl_ADDRESS = None
+EMAIl_PASSWORD = None 
