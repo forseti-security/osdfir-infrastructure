@@ -38,6 +38,16 @@ variable "infrastructure_id" {
   default     = ""
 }
 
+variable "turbinia_creation_date" {
+  description = "The creation date of this Turbinia instance"
+  default = ""
+}
+
+variable "turbinia_creator" {
+  description = "The creator of this Turbinia instance"
+  default = ""
+}
+
 variable "turbinia_docker_image_server" {
   description = "The docker image to use for the Turbinia Server"
   default = "us-docker.pkg.dev/osdfir-registry/turbinia/release/turbinia-server:latest"

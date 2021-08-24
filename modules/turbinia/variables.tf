@@ -37,6 +37,16 @@ variable "container_base_image" {
   default = "cos-cloud/cos-stable"
 }
 
+variable "turbinia_creation_date" {
+  description = "The creation date of this Turbinia instance"
+  default = ""
+}
+
+variable "turbinia_creator" {
+  description = "The creator of this Turbinia instance"
+  default = ""
+}
+
 variable "turbinia_docker_image_server" {
   description = "Turbinia server docker image"
   default = "us-docker.pkg.dev/osdfir-registry/turbinia/release/turbinia-server:latest"
