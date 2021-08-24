@@ -175,9 +175,10 @@ if [[ "$*" != *--no-datastore* ]] ; then
 fi
 
 if [[ "$*" != *--debug-logs* ]] ; then
-  DEBUG_LOGS="-var debug_logs=true"
-else
   DEBUG_LOGS=""
+else
+  echo "Enabling debug logs for server/worker"
+  DEBUG_LOGS="-var debug_logs=true"
 fi
 
 # Run Terraform to setup the rest of the infrastructure
