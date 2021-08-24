@@ -58,6 +58,7 @@ module "turbinia" {
   turbinia_docker_image_server = var.turbinia_docker_image_server
   turbinia_docker_image_worker = var.turbinia_docker_image_worker
   vpc_network                  = var.vpc_network
+  debug_logs                   = var.debug_logs
 }
 
 #------------#

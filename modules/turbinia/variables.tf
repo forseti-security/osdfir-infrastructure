@@ -96,3 +96,8 @@ variable "vpc_network" {
   description = "The VPC network the stack will be configured in"
   default = "default"
 }
+
+variable "debug_logs" {
+  description = "Whether to enable debug logs on the worker/server"
+  default = ""
+}

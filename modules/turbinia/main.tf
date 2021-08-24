@@ -136,6 +136,9 @@ module "gce-server-container" {
       {
         name  = "TURBINIA_CONF"
         value = local.turbinia_config
+      }, {
+        name  = "TURBINIA_EXTRA_ARGS"
+        value = var.debug_logs == "true" ? "-d" : ""
       }
     ]
     tty : true
@@ -228,6 +231,9 @@ module "gce-worker-container" {
       }, {
         name  = "TURBINIA_TMP_DIR"
         value = var.turbinia_tmp_directory
+      }, {
+        name  = "TURBINIA_EXTRA_ARGS"
+        value = var.debug_logs == "true" ? "-d" : ""
       }
     ]
     tty : true
