@@ -55,7 +55,7 @@ module "turbinia" {
   gcp_region                   = var.gcp_region
   gcp_zone                     = var.gcp_zone
   infrastructure_id            = coalesce(var.infrastructure_id, random_id.infrastructure-random-id.hex)
-  turbinia_creator             = var.turbinia_creator
+  turbinia_created_by          = var.turbinia_created_by
   turbinia_creation_date       = var.turbinia_creation_date
   turbinia_docker_image_server = var.turbinia_docker_image_server
   turbinia_docker_image_worker = var.turbinia_docker_image_worker

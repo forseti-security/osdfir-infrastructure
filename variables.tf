@@ -43,8 +43,8 @@ variable "turbinia_creation_date" {
   default = ""
 }
 
-variable "turbinia_creator" {
-  description = "The creator of this Turbinia instance"
+variable "turbinia_created_by" {
+  description = "The user who created this Turbinia instance"
   default = ""
 }
 

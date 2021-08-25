@@ -183,7 +183,7 @@ fi
 
 # Run Terraform to setup the rest of the infrastructure
 terraform init
-CREATION_DATA="-var turbinia_creator=$USER -var turbinia_creation_date=$( date -Iminutes -u )"
+CREATION_DATA="-var turbinia_created_by=$USER -var turbinia_creation_date=$( date -Iminutes -u )"
 if [ $TIMESKETCH -eq "1" ] ; then
   terraform apply --target=module.timesketch -var gcp_project=$DEVSHELL_PROJECT_ID $DOCKER_IMAGE -var vpc_network=$VPC_NETWORK $CREATION_DATA $DEBUG_LOGS -auto-approve
 fi
