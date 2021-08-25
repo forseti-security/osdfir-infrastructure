@@ -20,6 +20,7 @@ if [[ "$*" == *--help ]] ; then
   echo "--no-datastore                 Do not configure Turbinia Datastore"
   echo "--no-virtualenv                Do not install the Turbinia client in a virtual env"
   echo "--no-monitoring                Do not deploy the monitoring infrastructure"
+  echo "--debug-logs                   Enable debug logs on server/workers"
   exit 1
 fi
 
@@ -173,14 +174,22 @@ if [[ "$*" != *--no-datastore* ]] ; then
   gcloud --project $DEVSHELL_PROJECT_ID -q datastore indexes create $DIR/modules/turbinia/data/index.yaml
 fi
 
+if [[ "$*" != *--debug-logs* ]] ; then
+  DEBUG_LOGS=""
+else
+  echo "Enabling debug logs for server/worker"
+  DEBUG_LOGS="-var debug_logs=true"
+fi
+
 # Run Terraform to setup the rest of the infrastructure
 terraform init
+CREATION_DATA="-var turbinia_created_by=$USER -var turbinia_creation_date=$( date -Iminutes -u )"
 if [ $TIMESKETCH -eq "1" ] ; then
-  terraform apply --target=module.timesketch -var gcp_project=$DEVSHELL_PROJECT_ID $DOCKER_IMAGE -var vpc_network=$VPC_NETWORK -auto-approve
+  terraform apply --target=module.timesketch -var gcp_project=$DEVSHELL_PROJECT_ID $DOCKER_IMAGE -var vpc_network=$VPC_NETWORK $CREATION_DATA $DEBUG_LOGS -auto-approve
 fi
 
 if [ $TURBINIA -eq "1" ] ; then
-  terraform apply --target=module.turbinia -var gcp_project=$DEVSHELL_PROJECT_ID $DOCKER_IMAGE -var vpc_network=$VPC_NETWORK  -auto-approve
+  terraform apply --target=module.turbinia -var gcp_project=$DEVSHELL_PROJECT_ID $DOCKER_IMAGE -var vpc_network=$VPC_NETWORK $CREATION_DATA $DEBUG_LOGS -auto-approve
 fi
 
 

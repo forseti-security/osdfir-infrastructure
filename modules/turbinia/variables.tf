@@ -37,6 +37,16 @@ variable "container_base_image" {
   default = "cos-cloud/cos-stable"
 }
 
+variable "turbinia_creation_date" {
+  description = "The creation date of this Turbinia instance"
+  default = ""
+}
+
+variable "turbinia_created_by" {
+  description = "The user who created this Turbinia instance"
+  default = ""
+}
+
 variable "turbinia_docker_image_server" {
   description = "Turbinia server docker image"
   default = "us-docker.pkg.dev/osdfir-registry/turbinia/release/turbinia-server:latest"
@@ -95,4 +105,9 @@ variable "turbinia_tmp_directory" {
 variable "vpc_network" {
   description = "The VPC network the stack will be configured in"
   default = "default"
+}
+
+variable "debug_logs" {
+  description = "Whether to enable debug logs on the worker/server"
+  default = ""
 }
