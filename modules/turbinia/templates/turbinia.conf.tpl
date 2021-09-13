@@ -8,6 +8,7 @@ LOG_FILE            = '/var/log/turbinia/turbinia.log'
 LOCK_FILE           = '/var/lock/turbinia-worker.lock'
 RESOURCE_FILE       = '${output_dir}/turbinia-state.json'
 RESOURCE_FILE_LOCK  = '${output_dir}/turbinia-state.json.lock'
+SCALEDOWN_WORKER_FILE = '${tmp_dir}/turbinia-to-scaledown.lock'
 SLEEP_TIME          = 10
 SINGLE_RUN          = False
 MOUNT_DIR_PREFIX    = '/mnt/turbinia'
