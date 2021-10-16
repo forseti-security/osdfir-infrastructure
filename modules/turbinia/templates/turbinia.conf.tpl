@@ -6,6 +6,7 @@ OUTPUT_DIR          = '${output_dir}'
 TMP_DIR             = '${tmp_dir}'
 LOG_FILE            = '/var/log/turbinia/turbinia.log'
 LOCK_FILE           = '/var/lock/turbinia-worker.lock'
+TMP_RESOURCE_DIR    = '/var/run/lock'
 RESOURCE_FILE       = '${output_dir}/turbinia-state.json'
 RESOURCE_FILE_LOCK  = '${output_dir}/turbinia-state.json.lock'
 SCALEDOWN_WORKER_FILE = '${tmp_dir}/turbinia-to-scaledown.lock'
@@ -20,7 +21,7 @@ RECIPE_FILE_DIR     = '/etc/turbinia/recipes'
 DOCKER_ENABLED = False
 
 # Any jobs added to this list will disable it from being used.
-DISABLED_JOBS = ['VolatilityJob', 'BinaryExtractorJob', 'BulkExtractorJob', 'PhotorecJob']
+DISABLED_JOBS = ['VolatilityJob', 'BinaryExtractorJob', 'BulkExtractorJob', 'DfdeweyJob', 'PhotorecJob']
 
 # Configure additional job dependency checks below.
 DEPENDENCIES = [{
@@ -33,6 +34,16 @@ DEPENDENCIES = [{
     'programs': ['bulk_extractor'],
     'docker_image': None,
     'timeout': 14400
+}, {
+    'job': 'DfdeweyJob',
+    'programs': ['dfdewey'],
+    'docker_image': None,
+    'timeout': 86400
+}, {
+    'job': 'DockerContainersEnumerationJob',
+    'programs': ['de.py'],
+    'docker_image': None,
+    'timeout': 1200
 }, {
     'job': 'FsstatJob',
     'programs': ['fsstat'],
@@ -61,6 +72,11 @@ DEPENDENCIES = [{
 }, {
     'job': 'LinuxAccountAnalysisJob',
     'programs': ['hashcat'],
+    'docker_image': None,
+    'timeout': 1200
+}, {
+    'job': 'LokiAnalysisJob',
+    'programs': ['/opt/loki/loki.py'],
     'docker_image': None,
     'timeout': 1200
 }, {
@@ -99,10 +115,10 @@ DEPENDENCIES = [{
     'docker_image': None,
     'timeout': 3600
 }, {
-    'job': 'DockerContainersEnumerationJob',
-    'programs': ['de.py'],
+    'job': 'WordpressCredsAnalysisJob',
+    'programs': ['hashcat', 'grep', 'strings'],
     'docker_image': None,
-    'timeout': 1200
+    'timeout': 3600
 }]
 
 # Prometheus monitoring config
