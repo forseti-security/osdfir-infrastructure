@@ -48,6 +48,7 @@ resource "google_pubsub_topic" "pubsub-topic-psq" {
 # Cloud Storage Bucket
 resource "google_storage_bucket" "output-bucket" {
   name          = "turbinia-${var.infrastructure_id}"
+  location      = var.gcp_region
   depends_on    = [google_project_service.services]
   uniform_bucket_level_access = true
   force_destroy = true
