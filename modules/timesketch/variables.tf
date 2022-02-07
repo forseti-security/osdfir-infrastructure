@@ -34,7 +34,7 @@ variable "gcp_ubuntu_1804_image" {
 }
 
 variable "infrastructure_id" {
-  description = "Unique indentifier for the deployment"
+  description = "Unique identifier for the deployment"
 }
 
 variable "timesketch_machine_type" {

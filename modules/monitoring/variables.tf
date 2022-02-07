@@ -29,7 +29,7 @@ variable "gcp_zone" {
 }
 
 variable "infrastructure_id" {
-  description = "Unique indentifier for the deployment"
+  description = "Unique identifier for the deployment"
 }
 
 variable "container_base_image" {
