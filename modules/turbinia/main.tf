@@ -54,7 +54,7 @@ resource "google_storage_bucket" "output-bucket" {
   force_destroy = true
 }
 
-# Bucket notfication for GCS importer
+# Bucket notification for GCS importer
 resource "google_pubsub_topic" "pubsub-topic-gcs" {
   name = "turbinia-gcs-${var.infrastructure_id}"
   depends_on  = [google_project_service.services]

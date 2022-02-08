@@ -34,7 +34,7 @@ variable "gcp_ubuntu_1804_image" {
 }
 
 variable "infrastructure_id" {
-  description = "Unique indentifier for the deployment (default: random ID)"
+  description = "Unique identifier for the deployment (default: random ID)"
   default     = ""
 }
 
