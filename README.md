@@ -1,4 +1,8 @@
-**Note**: This is an early (alpha) release and the deployment is not fully polished yet. You are welcome to test it out and if you have any questions on how to use the tools please reach out to the official mailing lists.
+**Note**: ***This installation method will be deprecated by the end of 2022. 
+The recommended method for installing Timesketch is
+[here](https://timesketch.org/guides/admin/install/) and the recommended
+method for installing Turbinia is
+[here](https://turbinia.readthedocs.io/en/latest/user/install-gke.html).***
 
 **Note**: This setup will add billing costs to your project.
 
