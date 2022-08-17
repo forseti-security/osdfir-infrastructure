@@ -2,9 +2,9 @@
 
 set -e
 
-TURBINIA_CONFIG="$HOME/.turbiniarc"
-TURBINIA_REGION=us-central1
-VPC_NETWORK="default"
+export TURBINIA_CONFIG="$HOME/.turbiniarc"
+export TURBINIA_REGION=us-central1
+export VPC_NETWORK="default"
 
 if [[ "$*" == *--help ]] ; then
   echo "Terraform deployment script for Turbinia and Timesketch"
@@ -157,7 +157,7 @@ if [[ "$*" != *--no-cloudfunctions* ]] ; then
 
   # Deploying cloud functions is flaky. Retry until success.
   while true; do
-    num_functions="$(gcloud functions --project $DEVSHELL_PROJECT_ID list | grep task | grep $TURBINIA_REGION | wc -l)"
+    num_functions="$(gcloud functions --project $DEVSHELL_PROJECT_ID list | grep task -A 3| grep $TURBINIA_REGION | wc -l)"
     if [[ "${num_functions}" -eq "3" ]]; then
       echo "All Cloud Functions deployed"
       break
