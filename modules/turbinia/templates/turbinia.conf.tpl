@@ -2,6 +2,7 @@
 INSTANCE_ID         = 'turbinia-${turbinia_id}'
 STATE_MANAGER       = 'Datastore'
 TASK_MANAGER        = 'PSQ'
+CLOUD_PROVIDER      = 'GCP'
 OUTPUT_DIR          = '${output_dir}'
 TMP_DIR             = '${tmp_dir}'
 LOG_DIR             = '/var/log/turbinia'
