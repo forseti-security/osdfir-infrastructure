@@ -2,6 +2,7 @@
 INSTANCE_ID         = 'turbinia-${turbinia_id}'
 STATE_MANAGER       = 'Datastore'
 TASK_MANAGER        = 'PSQ'
+CLOUD_PROVIDER      = 'GCP'
 OUTPUT_DIR          = '${output_dir}'
 TMP_DIR             = '${tmp_dir}'
 LOG_DIR             = '/var/log/turbinia'
@@ -18,11 +19,17 @@ SHARED_FILESYSTEM   = False
 DEBUG_TASKS         = False
 RECIPE_FILE_DIR     = '/etc/turbinia/recipes'
 
+# Turbinia API Server Configuration
+API_SERVER_ADDRESS         = '0.0.0.0'
+API_SERVER_PORT            = 8000
+API_ALLOWED_ORIGINS        = ['http;//localhost:8000', 'http://localhost']
+API_AUTHENTICATION_ENABLED = False
+
 # This will enable the usage of docker containers for the worker.
 DOCKER_ENABLED = False
 
 # Any jobs added to this list will disable it from being used.
-DISABLED_JOBS = ['VolatilityJob', 'BinaryExtractorJob', 'BulkExtractorJob', 'DfdeweyJob', 'HindsightJob', 'PhotorecJob']
+DISABLED_JOBS = ['BinaryExtractorJob', 'BulkExtractorJob', 'DfdeweyJob', 'HindsightJob', 'PhotorecJob']
 
 # Configure additional job dependency checks below.
 DEPENDENCIES = [{
@@ -147,6 +154,14 @@ KOMBU_DURABLE         = True
 REDIS_HOST            = None
 REDIS_PORT            = None
 REDIS_DB              = None
+
+# dfDewey Config
+DFDEWEY_PG_HOST    = '127.0.0.1'
+DFDEWEY_PG_PORT    = 5432
+DFDEWEY_PG_DB_NAME = 'dfdewey'
+DFDEWEY_OS_HOST    = '127.0.0.1'
+DFDEWEY_OS_PORT    = 9200
+DFDEWEY_OS_URL     = None
 
 # Email notification config
 EMAIL_NOTIFICATIONS = False
