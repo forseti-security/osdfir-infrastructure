@@ -29,7 +29,7 @@ API_AUTHENTICATION_ENABLED = False
 DOCKER_ENABLED = False
 
 # Any jobs added to this list will disable it from being used.
-DISABLED_JOBS = ['BinaryExtractorJob', 'BulkExtractorJob', 'DfdeweyJob', 'HindsightJob', 'PhotorecJob']
+DISABLED_JOBS = ['BinaryExtractorJob', 'BulkExtractorJob', 'DfdeweyJob', 'HindsightJob', 'PhotorecJob', 'VolatilityJob']
 
 # Configure additional job dependency checks below.
 DEPENDENCIES = [{
