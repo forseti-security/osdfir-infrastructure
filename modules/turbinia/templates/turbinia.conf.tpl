@@ -24,6 +24,7 @@ API_SERVER_ADDRESS         = '0.0.0.0'
 API_SERVER_PORT            = 8000
 API_ALLOWED_ORIGINS        = ['http;//localhost:8000', 'http://localhost']
 API_AUTHENTICATION_ENABLED = False
+WEBUI_PATH                 = '/web'
 
 # This will enable the usage of docker containers for the worker.
 DOCKER_ENABLED = False
